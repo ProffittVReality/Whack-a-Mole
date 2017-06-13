@@ -8,7 +8,7 @@ public class BalloonPop : MonoBehaviour {
 	public AudioClip popSound;
 	private AudioSource source;
 
-	public bool hasPopped = false;
+	public TrialManagerScript trialManager;
 
 	// Use this for initialization
 	void Start () {
@@ -20,13 +20,17 @@ public class BalloonPop : MonoBehaviour {
 	
 	}
 
-	void OnTriggerEnter() {
-		balloonCol.enabled = false;
-		if (!hasPopped) {
-			source.PlayOneShot (popSound, 1F);
-			hasPopped = true; // NOTE: must reset this to false when respawning balloon
+	void OnTriggerEnter(Collider collider) {
+		if (collider.tag == "Sword" && !balloon.GetComponent<BalloonScript>().popAttempted) {
+			balloonCol.enabled = false;
+			if (!balloon.GetComponent<BalloonScript>().hasPopped) {
+				trialManager.popCount += 1; // inform the trial manager of balloon pop
+				balloon.GetComponent<BalloonScript>().hasPopped = true; // NOTE: must reset this to false when respawning balloon
+
+				source.PlayOneShot (popSound, 1F);
+			}
+			StartCoroutine (ExecuteAfterTime (0.1f));
 		}
-		StartCoroutine(ExecuteAfterTime(0.1f));
 	}
 
 	IEnumerator ExecuteAfterTime(float time)
