@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class Balloons {
@@ -33,14 +34,21 @@ public class BalloonSpawn : MonoBehaviour {
 	private int i = 0;
 	private int[] indices;
 
-	//[HideInInspector]
+	[HideInInspector]
 	public bool balloonActive = false; // true if any balloon is active
+	[HideInInspector]
 	public bool balloonSleeping = true; // true if active balloon is sleeping
+	[HideInInspector]
+	public bool noHit = false; // true if no hit for current balloon
 
 	[HideInInspector]
 	public int subTrial;
 
 	bool trialEnd = false;
+
+	public DriftController driftController;
+	public TrialManagerScript trialManager;
+	public GUI_Handler guiHandler;
 
 	// Use this for initialization
 	void Start () {
@@ -52,13 +60,12 @@ public class BalloonSpawn : MonoBehaviour {
 		}
 
 		// generate first order for spawning
-		// TODO: move this to Update (solution: put in StartTrial)
 		GenerateOrder ();
 	}
 
 	// Update is called once per frame
 	void Update () {
-		Debug.Log (activeBalloon);
+		
 	}
 
 	public bool RunTrial(float activeTime) {
@@ -75,7 +82,6 @@ public class BalloonSpawn : MonoBehaviour {
 			balloons [indices[i]].GetComponent<BalloonScript>().hasPopped = false;
 			balloons [indices[i]].GetComponent<BalloonScript>().popAttempted = false;
 			balloons [indices [i]].GetComponent<BalloonScript> ().popTime = Time.time + intervalTime + activeTime;
-			//activeBalloon = balloons [indices [i]];
 
 			StartCoroutine (StayWoke (intervalTime, activeTime));
 
@@ -94,6 +100,15 @@ public class BalloonSpawn : MonoBehaviour {
 	IEnumerator DelayTrue(float time) {
 		// change trialEnd to true after time seconds
 		yield return new WaitForSeconds (time);
+		// if hit missed, record data
+		if (i > 0) {
+			GameObject lastBalloon = balloons [indices [i - 1]];
+			if (!lastBalloon.GetComponent<BalloonScript> ().dataTaken) {
+				MissedHit ();
+				lastBalloon.GetComponent<BalloonScript> ().dataTaken = true;
+			}
+		}
+
 		trialEnd = true;
 	}
 		
@@ -119,10 +134,24 @@ public class BalloonSpawn : MonoBehaviour {
 		balloonSleeping = true;
 		yield return new WaitForSeconds (time);
 		balloons [index].SetActive (true);
+		balloons [index].GetComponent<BalloonScript> ().balloonCollider.enabled = true;
 
 		balloonSleeping = false;
 		activeBalloon = balloons [indices [i]];
 		subTrial = i+1; // because i is the index and indices go from 0 not 1
+		activeBalloon.GetComponent<BalloonScript> ().dataTaken = false;
+
+		if (trialManager.trialMode)
+			driftController.SetNewConditions ();
+
+		// was data recorded for last balloon? if not, record missed hit data
+		if (i > 0 && subTrial > 1) {
+			GameObject lastBalloon = balloons [indices[i-1]];
+			if (!lastBalloon.GetComponent<BalloonScript> ().dataTaken) {
+				MissedHit ();
+				lastBalloon.GetComponent<BalloonScript> ().dataTaken = true;
+			}
+		}
 	}
 
 	// helper function for NewTrial
@@ -137,6 +166,58 @@ public class BalloonSpawn : MonoBehaviour {
 				randomVal = rnd.Next (12);
 			}
 			indices [i] = randomVal;
+		}
+	}
+
+	void MissedHit() {
+		if (trialManager.calibrationMode && subTrial > 1) {
+			// export calibration data
+			string trialNumber;
+			if (i >= 12) {
+				trialNumber = "Prac" + trialManager.calibrationRound.ToString () + "." + (subTrial).ToString ();
+			} else {
+				trialNumber = "Prac" + trialManager.calibrationRound.ToString () + "." + (subTrial-1).ToString ();
+			}
+			string balloonTimeSeconds = trialManager.balloonLifetime.ToString (); 
+			string balloonPopped = "N";
+			string amountCenter = "No Hit";
+			string hitInTime = "N";
+			guiHandler.exportCalibrationData (new List<string> {
+				trialNumber,
+				balloonTimeSeconds,
+				balloonPopped,
+				amountCenter,
+				hitInTime
+			});
+
+		} else if (trialManager.trialMode && subTrial > 1) {
+			// export trial data
+			string trialNumber;
+			if (i >= 12) {
+				trialNumber = "Data" + trialManager.trialNumber.ToString () + "." + (subTrial).ToString ();
+			} else {
+				trialNumber = "Data" + trialManager.trialNumber.ToString () + "." + (subTrial-1).ToString ();
+			}
+			string balloonTimeSeconds = trialManager.balloonLifetime.ToString ();
+			string numberPracticed = trialManager.totalCalibrationRounds.ToString ();
+			string balloonPopped = "N";
+			string amountCenter = "No Hit";
+			string noDriftAmountCenter = "No Hit";
+			string hitInTime = "N";
+			string driftType = guiHandler.driftLabel.text;
+			List<string> driftAmount = driftController.GetDriftAmount();
+			List<string> exportList = new List<string> {
+				trialNumber,
+				balloonTimeSeconds,
+				numberPracticed,
+				balloonPopped,
+				amountCenter,
+				noDriftAmountCenter,
+				hitInTime,
+				driftType,
+			};
+			exportList.AddRange (driftAmount);
+			guiHandler.exportTrialData (exportList);
 		}
 	}
 	

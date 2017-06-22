@@ -5,13 +5,21 @@ public class StabPosition : MonoBehaviour {
 
 	[HideInInspector]
 	public Vector3 entryPosition;
+	[HideInInspector]
+	public Vector3 unrotatedEntryPosition;
 	public GameObject swordTipL;
 	public GameObject swordTipR;
+	public GameObject unrotatedL;
+	public GameObject unrotatedR;
 
 	void OnTriggerEnter() {
-		if (swordTipL.activeInHierarchy)
+		if (swordTipL.activeInHierarchy) {
 			entryPosition = swordTipL.transform.position;
-		else if (swordTipR.activeInHierarchy)
+			unrotatedEntryPosition = unrotatedL.transform.position;
+		}
+		else if (swordTipR.activeInHierarchy) {
 			entryPosition = swordTipR.transform.position;
+			unrotatedEntryPosition = unrotatedR.transform.position;
+		}
 	}
 }

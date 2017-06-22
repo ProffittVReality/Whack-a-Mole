@@ -8,7 +8,6 @@ using Valve.VR;
 public class CalibrationSettings
 {
 	public float passNum;
-	public float failNum;
 
 	public float initialLifetime;
 	public float passRoundDecrement;
@@ -25,19 +24,27 @@ public class TrialManagerScript : MonoBehaviour {
 
 	public CalibrationSettings calibrationSettings;
 
+	[HideInInspector]
 	public int calibrationRound = 0;
+	[HideInInspector]
 	public bool calibrationMode = true;
 
+	[HideInInspector]
 	public int trialNumber = 0;
+	[HideInInspector]
 	public bool trialMode = false;
 	public int numTrials;
 
+	[HideInInspector]
 	public float balloonLifetime;
+	[HideInInspector]
 	public float popCount;
 
+	[HideInInspector]
 	public bool roundOver = true; // initialize to true to start first trial
+	bool gotEight = false; // first 8 of calibration round is achieved
 
-	public KeyCode nextTrial = KeyCode.Z;
+	public KeyCode nextTrial;
 
 	[HideInInspector]
 	public float totalCalibrationRounds; // for calibration data file
@@ -72,28 +79,40 @@ public class TrialManagerScript : MonoBehaviour {
 
 			ExperimentPhase ();
 		}
+
+		if (trialNumber == numTrials && roundOver) {
+			trialText.text = "Experiment Over";
+		}
 			
 	}
 
 	void CalibrationPhase() {
 		//Debug.Log ("roundOver: " + roundOver.ToString ());
 		if (roundOver) {
-			if (popCount <= calibrationSettings.passNum && popCount >= calibrationSettings.failNum) {
+			if (popCount >= calibrationSettings.passNum && gotEight) {
 				trialMode = true;
 				totalCalibrationRounds = calibrationRound;
 				calibrationMode = false;
 			}
 			nextTrialAlert.SetActive (true);
 			if (Input.GetKeyDown (nextTrial)) {
+				if (popCount >= calibrationSettings.passNum-1 && popCount <= calibrationSettings.passNum+1) {
+					gotEight = true;
+					calibrationSettings.passRoundDecrement *= 0.5f;
+					calibrationSettings.failRoundIncrement *= 0.5f;
+				}
+
 				nextTrialAlert.SetActive (false); // turn off indicator
 
 				// set new balloon lifetime
 				if (calibrationRound >= 1) { // make no adjustments before first trial
 					Debug.Log ("popCount: " + popCount.ToString ());
-					if (popCount > calibrationSettings.passNum) {
+
+					if (popCount > calibrationSettings.passNum+1) {
 						balloonLifetime -= calibrationSettings.passRoundDecrement;
-					} else if (popCount < calibrationSettings.failNum) {
+					} else if (popCount < calibrationSettings.passNum-1) {
 						balloonLifetime += calibrationSettings.failRoundIncrement;
+						gotEight = false;
 					}
 				}
 				popCount = 0; 
@@ -107,7 +126,7 @@ public class TrialManagerScript : MonoBehaviour {
 	}
 
 	void ExperimentPhase() {
-		if (roundOver) {
+		if (roundOver && trialNumber != numTrials) {
 			nextTrialAlert.SetActive (true);
 			if (Input.GetKeyDown (nextTrial)) {
 				nextTrialAlert.SetActive (false); // turn off indicator

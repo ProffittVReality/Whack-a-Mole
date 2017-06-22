@@ -3,18 +3,17 @@ using System.Collections;
 
 public class BalloonScript : MonoBehaviour {
 
+	[HideInInspector]
 	public bool hasPopped;
+	[HideInInspector]
 	public bool popAttempted;
 
-	public float popTime;
+	[HideInInspector]
+	public bool dataTaken = false;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+	[HideInInspector]
+	public float popTime;
+	public Collider balloonCollider;
+
+	public Vector3 entryPosition;
 }
