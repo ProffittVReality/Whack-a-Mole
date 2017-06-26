@@ -57,12 +57,17 @@ public class StabAttempt : MonoBehaviour {
 						noDriftDistance = distance;
 
 					// would they have hit the balloon? 
+					if (balloonSpawn.activeBalloon.GetComponent<BalloonScript> ().hasPopped)
+						time = balloonSpawn.activeBalloon.GetComponent<BalloonScript> ().collisionTime;
+
 					float popTime = balloonSpawn.activeBalloon.GetComponent<BalloonScript> ().popTime;
 
 					bool inTime = !(time > popTime);
 
 					// did balloon pop? 
 					bool popSuccess = balloonSpawn.activeBalloon.GetComponent<BalloonScript> ().hasPopped;
+					if (popSuccess)
+						inTime = true;
 
 					balloonSpawn.activeBalloon.GetComponent<BalloonScript> ().dataTaken = true;
 
@@ -78,7 +83,9 @@ public class StabAttempt : MonoBehaviour {
 							balloonTimeSeconds,
 							balloonPopped,
 							amountCenter,
-							hitInTime
+							hitInTime,
+							time.ToString(),
+							popTime.ToString()
 						});
 
 					} else if (trialManager.trialMode) {

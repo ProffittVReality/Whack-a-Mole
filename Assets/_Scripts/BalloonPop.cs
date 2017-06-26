@@ -7,7 +7,7 @@ public class BalloonPop : MonoBehaviour {
 	public GameObject balloon;
 	public GameObject popParticle;
 	public AudioClip popSound;
-	private AudioSource source;
+	public AudioSource source;
 
 	public TrialManagerScript trialManager;
 
@@ -16,7 +16,7 @@ public class BalloonPop : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		source = GetComponent<AudioSource> ();
+
 	}
 	
 	// Update is called once per frame
@@ -25,7 +25,10 @@ public class BalloonPop : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider collider) {
-		if (collider.tag == "Sword" && !balloon.GetComponent<BalloonScript>().popAttempted) {
+		bool inTime = balloon.GetComponent<BalloonScript> ().collisionTime < balloon.GetComponent<BalloonScript> ().popTime;
+		if (collider.tag == "Sword" && !balloon.GetComponent<BalloonScript>().popAttempted && inTime) {
+			balloon.GetComponent<BalloonScript>().collisionTime = Time.time;
+
 			balloonCol.enabled = false;
 
 			if (swordTipL.activeInHierarchy) {

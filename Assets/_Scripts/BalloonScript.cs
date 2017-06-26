@@ -13,7 +13,19 @@ public class BalloonScript : MonoBehaviour {
 
 	[HideInInspector]
 	public float popTime;
+	[HideInInspector]
+	public float collisionTime;
 	public Collider balloonCollider;
-
+	[HideInInspector]
 	public Vector3 entryPosition;
+	[HideInInspector]
+	public Vector3 startingPosition;
+	[HideInInspector]
+	public Quaternion startingRotation;
+	public Transform balloonTransform;
+
+	void Start() {
+		startingPosition = balloonTransform.localPosition;
+		startingRotation = balloonTransform.localRotation;
+	}
 }

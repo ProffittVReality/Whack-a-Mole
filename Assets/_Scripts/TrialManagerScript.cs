@@ -24,10 +24,15 @@ public class TrialManagerScript : MonoBehaviour {
 
 	public CalibrationSettings calibrationSettings;
 
+	bool tutorialMode = true;
+	bool tutorialStarted = false;
+	int tutorialRound = 0;
+	public int tutorialNum;
+
 	[HideInInspector]
 	public int calibrationRound = 0;
 	[HideInInspector]
-	public bool calibrationMode = true;
+	public bool calibrationMode = false;
 
 	[HideInInspector]
 	public int trialNumber = 0;
@@ -51,6 +56,7 @@ public class TrialManagerScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		calibrationMode = false;
 		popCount = 0;
 		balloonLifetime = calibrationSettings.initialLifetime;
 		nextTrialAlert.SetActive (false);
@@ -58,6 +64,18 @@ public class TrialManagerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (tutorialMode) {
+			if (tutorialRound == 0) {
+				trialText.text = "Tutorial Mode";
+			} else {
+				string roundText = tutorialRound.ToString ();
+				trialText.text = "Tutorial Mode: Round " + roundText;
+			}
+
+			TutorialMode ();
+		}
+
 		if (calibrationMode) {
 			if (calibrationRound == 0) {
 				trialText.text = "Calibration Mode";
@@ -86,8 +104,26 @@ public class TrialManagerScript : MonoBehaviour {
 			
 	}
 
+	void TutorialMode() {
+		if (roundOver) {
+			if (tutorialRound == tutorialNum) {
+				calibrationMode = true;
+				tutorialMode = false;
+			}
+
+			nextTrialAlert.SetActive (true);
+			if (Input.GetKeyDown (nextTrial)) {
+				nextTrialAlert.SetActive (false); // turn off indicator
+				spawnController.StartTrial (); // set initial conditions for trial
+				tutorialRound += 1;
+			}
+		}
+		if (tutorialRound > 0) { // so a trial does not start without key press
+			roundOver = spawnController.RunTrial (balloonLifetime);
+		}
+	}
+
 	void CalibrationPhase() {
-		//Debug.Log ("roundOver: " + roundOver.ToString ());
 		if (roundOver) {
 			if (popCount >= calibrationSettings.passNum && gotEight) {
 				trialMode = true;
@@ -106,7 +142,6 @@ public class TrialManagerScript : MonoBehaviour {
 
 				// set new balloon lifetime
 				if (calibrationRound >= 1) { // make no adjustments before first trial
-					Debug.Log ("popCount: " + popCount.ToString ());
 
 					if (popCount > calibrationSettings.passNum+1) {
 						balloonLifetime -= calibrationSettings.passRoundDecrement;

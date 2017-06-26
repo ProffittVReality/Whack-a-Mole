@@ -92,7 +92,14 @@ public class BalloonSpawn : MonoBehaviour {
 
 		if (i == 12) {
 			// delay true return to allow late hits on last balloon
-			StartCoroutine (DelayTrue (2f));
+			StartCoroutine (DelayTrue (activeTime+highIntervalLimit));
+			if (i > 0) {
+				GameObject lastBalloon = balloons [indices [i - 1]];
+				if (!lastBalloon.GetComponent<BalloonScript> ().dataTaken) {
+					MissedHit ();
+					lastBalloon.GetComponent<BalloonScript> ().dataTaken = true;
+				}
+			}
 		}
 		return trialEnd;
 	}
@@ -100,15 +107,6 @@ public class BalloonSpawn : MonoBehaviour {
 	IEnumerator DelayTrue(float time) {
 		// change trialEnd to true after time seconds
 		yield return new WaitForSeconds (time);
-		// if hit missed, record data
-		if (i > 0) {
-			GameObject lastBalloon = balloons [indices [i - 1]];
-			if (!lastBalloon.GetComponent<BalloonScript> ().dataTaken) {
-				MissedHit ();
-				lastBalloon.GetComponent<BalloonScript> ().dataTaken = true;
-			}
-		}
-
 		trialEnd = true;
 	}
 		
@@ -133,6 +131,8 @@ public class BalloonSpawn : MonoBehaviour {
 		int index = indices [i];
 		balloonSleeping = true;
 		yield return new WaitForSeconds (time);
+		balloons [index].transform.localPosition = balloons [index].GetComponent<BalloonScript> ().startingPosition;
+		balloons [index].transform.localRotation = balloons [index].GetComponent<BalloonScript> ().startingRotation;
 		balloons [index].SetActive (true);
 		balloons [index].GetComponent<BalloonScript> ().balloonCollider.enabled = true;
 
@@ -145,8 +145,9 @@ public class BalloonSpawn : MonoBehaviour {
 			driftController.SetNewConditions ();
 
 		// was data recorded for last balloon? if not, record missed hit data
-		if (i > 0 && subTrial > 1) {
+		if (i > 0) {
 			GameObject lastBalloon = balloons [indices[i-1]];
+			Debug.Log (lastBalloon.GetComponent<BalloonScript> ().dataTaken);
 			if (!lastBalloon.GetComponent<BalloonScript> ().dataTaken) {
 				MissedHit ();
 				lastBalloon.GetComponent<BalloonScript> ().dataTaken = true;
@@ -187,7 +188,9 @@ public class BalloonSpawn : MonoBehaviour {
 				balloonTimeSeconds,
 				balloonPopped,
 				amountCenter,
-				hitInTime
+				hitInTime,
+				subTrial.ToString(),
+				i.ToString()
 			});
 
 		} else if (trialManager.trialMode && subTrial > 1) {
