@@ -56,7 +56,9 @@ public class TrialManagerScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		tutorialMode = true;
 		calibrationMode = false;
+		trialMode = false;
 		popCount = 0;
 		balloonLifetime = calibrationSettings.initialLifetime;
 		nextTrialAlert.SetActive (false);
