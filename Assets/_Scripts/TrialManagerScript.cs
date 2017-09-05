@@ -131,10 +131,13 @@ public class TrialManagerScript : MonoBehaviour {
 				trialMode = true;
 				totalCalibrationRounds = calibrationRound;
 				calibrationMode = false;
+				return;
 			}
 			nextTrialAlert.SetActive (true);
 			if (Input.GetKeyDown (nextTrial)) {
-				if (popCount >= calibrationSettings.passNum-1 && popCount <= calibrationSettings.passNum+1) {
+				// only allow gotEight to be true if it is not the first round of calibration, don't want a fluke 8 that ends calibration
+				if (popCount >= calibrationSettings.passNum-1 && popCount <= calibrationSettings.passNum+1 && calibrationRound>1) { 
+					print (calibrationRound);
 					gotEight = true;
 					calibrationSettings.passRoundDecrement *= 0.5f;
 					calibrationSettings.failRoundIncrement *= 0.5f;

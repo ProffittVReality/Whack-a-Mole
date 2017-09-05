@@ -1,0 +1,13 @@
+TimeStarted,ParticipantNumber,RAName,Age,Sex,Handedness,VRExperience,Trial,BalloonTimeSeconds,NumberPracticed,BalloonPopped,AmountCenter,NoDriftAmountCenter,HitInTime,DriftType,ControllerTranslationUp,ControllerTranslationForward,ControllerTranslationSide,ControllerRotationUp,ControllerRotationSide,HeadsetRotation
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.1,0.6999999,6,Y,0.08041505,0.05897873,Y,Controller Rotation Only,NONE,NONE,NONE,-5,0.05,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.2,0.6999999,6,Y,0.08256607,0.1223765,Y,Controller Rotation Only,NONE,NONE,NONE,5,0,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.3,0.6999999,6,Y,0.07136881,0.5824787,Y,Controller Rotation Only,NONE,NONE,NONE,20,20,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.4,0.6999999,6,Y,0.07883255,0.262323,Y,Controller Rotation Only,NONE,NONE,NONE,5,-10,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.5,0.6999999,6,Y,0.1891204,0.3589447,Y,Controller Rotation Only,NONE,NONE,NONE,0,20,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.6,0.6999999,6,Y,0.07671791,0.07696322,Y,Controller Rotation Only,NONE,NONE,NONE,-10,-5,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.7,0.6999999,6,Y,0.07624821,0.05423629,Y,Controller Rotation Only,NONE,NONE,NONE,-5,0.2,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.8,0.6999999,6,Y,0.2430935,0.06002418,Y,Controller Rotation Only,NONE,NONE,NONE,0,20,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.9,0.6999999,6,Y,0.109556,0.1746584,Y,Controller Rotation Only,NONE,NONE,NONE,-20,-10,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.10,0.6999999,6,Y,0.09769895,0.286988,Y,Controller Rotation Only,NONE,NONE,NONE,10,20,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.11,0.6999999,6,Y,0.2140423,0.3933065,Y,Controller Rotation Only,NONE,NONE,NONE,5,0,NONE
+9/5/2017 5:57:10 PM,,,,Male,Right,No,Data1.12,0.6999999,6,Y,0.2030028,0.1371519,Y,Controller Rotation Only,NONE,NONE,NONE,-5,10,NONE
